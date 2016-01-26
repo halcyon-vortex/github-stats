@@ -1,7 +1,7 @@
 var fs = require('fs');
 var _ = require('lodash');
 
-var file = JSON.parse(fs.readFileSync('user_get_allrepos_100.txt'));
+var file = JSON.parse(fs.readFileSync('hadley_repos'));
 
 var result = _.reduce(file, (acc, value, i, array) => {
   if (!value.fork) {
@@ -44,4 +44,4 @@ var result = _.reduce(file, (acc, value, i, array) => {
   return acc;
 }, []);
 console.log(result.length);
-//console.log(result);
+console.log(result);

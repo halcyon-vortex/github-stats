@@ -1,42 +1,30 @@
-import _ from 'lodash';
+/**
+ * Represents a book.
+ * @param {obj} data - json data returned from get request from github /user/:userid
+ */
+let parseUser = (data) => {
+  let {
+    login,
+    type,
+    location,
+    public_repos,
+    public_gists,
+    followers,
+    following,
+    created_at
+  } = data;
 
-export default (file) => _.reduce(file, (acc, value, i, array) => {
-  if (!value.fork) {
-    let {
-      name,
-      full_name,
-      description,
-      created_at,
-      updated_at,
-      pushed_at,
-      size,
-      stargazers_count,
-      watchers_count,
-      language,
-      forks_count,
-      forks,
-      watchers,
-      has_issues,
-      open_issues,
-      open_issues_count
-    } = value;
+  return ({
+    login,
+    type,
+    location,
+    public_repos,
+    public_gists,
+    followers,
+    following,
+    created_at
+  });
+}
 
-      acc.push({
-        name,
-        full_name,
-        created_at,
-        updated_at,
-        pushed_at,
-        size,
-        stargazers_count,
-        watchers_count,
-        language,
-        forks_count,
-        forks,
-        watchers,
-        open_issues,
-        open_issues_count
-      });
-  }
-  return acc;
-}, []);
+
+export default parseUser;

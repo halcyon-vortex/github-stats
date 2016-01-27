@@ -1,7 +1,8 @@
-import bluebird from 'bluebird';
-let Client = bluebird.promisifyAll(require('github'));
-import processUser from './process-user-aa';
-let github = new Client({
+require("babel-core/register");
+require("babel-polyfill");
+var Client = require('github');
+var processUser = require('./process-user-aa');
+var github = new Client({
   debug: true,
   version: "3.0.0"
 });

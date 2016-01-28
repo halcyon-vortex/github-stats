@@ -1,12 +1,11 @@
 import _ from 'lodash';
 import fs from 'fs';
-import parseRepos from './parse-repos.js';
+import parseRepos from './parsing/parse-repos.js';
 import winston from 'winston';
-
 winston.add(winston.transports.File, { filename: '../download_status.log' });
 winston.remove(winston.transports.Console);
 
-export default (authenticatedGithubClient, user) => {
+let processUser = function(authenticatedGithubClient, user) => {
 
   authenticatedGithubClient.repos.getFromUser({user: 'tj', per_page: 100}, (err, res) => {
     let repos = parseRepos(res);
@@ -30,3 +29,4 @@ export default (authenticatedGithubClient, user) => {
     });
   });
 };
+export default processUser;

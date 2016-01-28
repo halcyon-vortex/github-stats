@@ -11,4 +11,4 @@ github.authenticate({
     password: process.env.GHPW
 });
 
-processUser(github, "tj");
+processUser(github, "dpastoor");

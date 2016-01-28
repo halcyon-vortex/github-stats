@@ -18,7 +18,9 @@ export default (file) => _.reduce(file, (acc, value, i, array) => {
       watchers,
       has_issues,
       open_issues,
-      open_issues_count
+      open_issues_count,
+      owner,
+      fork
     } = value;
 
       acc.push({
@@ -35,7 +37,9 @@ export default (file) => _.reduce(file, (acc, value, i, array) => {
         forks,
         watchers,
         open_issues,
-        open_issues_count
+        open_issues_count,
+        owner: owner.login,
+        fork
       });
   }
   return acc;

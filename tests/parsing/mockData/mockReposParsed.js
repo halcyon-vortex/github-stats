@@ -17,7 +17,9 @@ export default {
       "forks": 6,
       "watchers": 23,
       "open_issues": 0,
-      "open_issues_count": 0
+      "open_issues_count": 0,
+      "owner": "hadley",
+      "fork": false
     },
     {
       "name": "15-student-papers",
@@ -33,7 +35,9 @@ export default {
       "forks": 0,
       "watchers": 14,
       "open_issues": 0,
-      "open_issues_count": 0
+      "open_issues_count": 0,
+      "owner": "hadley",
+      "fork": false
     }
   ]
 

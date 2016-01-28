@@ -1,3 +1,5 @@
 .DS_Store
 node_modules/
 .idea/
+download_status.log
+prior_responses/

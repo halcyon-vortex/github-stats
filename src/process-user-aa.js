@@ -40,8 +40,8 @@ let processUser = async function(authenticatedGithubClient, user) {
   let example = userStarsParsed[1]; // should be vtop
   console.log(example)
 
-
-  let stargazersPromises = _.map(_.range(1, 10), function(pageNum) {
+  winston.log('info', 'starting fetching data')
+  let stargazersPromises = _.map(_.range(1, 12), function(pageNum) {
     console.log('fetching page: ' + pageNum)
     return getStargazersFromRepo({
         headers: {"Accept": "application/vnd.github.v3.star+json"},
@@ -53,8 +53,8 @@ let processUser = async function(authenticatedGithubClient, user) {
     }
   );
   let stargazers = await Promise.all(stargazersPromises);
+  winston.log('info', 'finished fetching data');
   console.log('got all stargazers');
-
   fs.writeFileSync("stargazers_paginated.json", JSON.stringify(_.flatten(_.map(stargazers, parseStargazers)), 4, null))
   // store everything
   //let rate_limit = await request.getAsync(`https://dpastoor:${process.env.GHPW}@api.github.com/rate_limit`);

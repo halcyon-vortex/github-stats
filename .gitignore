@@ -3,3 +3,4 @@ node_modules/
 .idea/
 download_status.log
 prior_responses/
+.ipynb_checkpoints/

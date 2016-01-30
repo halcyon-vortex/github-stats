@@ -31,31 +31,31 @@ let processUser = async function(authenticatedGithubClient, user) {
   //winston.log('info', 'user info', parsedUserInfo);
   // get repos
   // TODO: add pagination
-  let userStars = await getStarredFromUser({user: user, per_page: 10});
+  let userStars = await getStarredFromUser({user: user, per_page: 100});
 
   // for each repo, if not currently stored in redis, get key information + stargazers
   let userStarsParsed = parseRepos(userStars);
 
-  // "full_name": "MrRio/vtop",
-  let example = userStarsParsed[1]; // should be vtop
-  console.log(example)
-
-  winston.log('info', 'starting fetching data')
-  let stargazersPromises = _.map(_.range(1, 12), function(pageNum) {
-    console.log('fetching page: ' + pageNum)
-    return getStargazersFromRepo({
-        headers: {"Accept": "application/vnd.github.v3.star+json"},
-        user: example.owner,
-        repo: example.name,
-        page: pageNum,
-        per_page: 100
-      })
-    }
-  );
-  let stargazers = await Promise.all(stargazersPromises);
-  winston.log('info', 'finished fetching data');
+  for (let repo of userStarsParsed) {
+    winston.log('info', 'starting fetching data')
+    // range is none inclusive, so need to do to 1 past page num, and floor is not including any remainder
+    // so + 1 for any remaining in the next 100 repos, so total of +2 in the _.range
+    let stargazersPromises = _.map(_.range(1, Math.floor(repo.stargazers_count/100)+2), function(pageNum) {
+        winston.log('info', 'fetching page: ' + pageNum + 'for repo ' + repo.full_name);
+        return getStargazersFromRepo({
+          headers: {"Accept": "application/vnd.github.v3.star+json"},
+          user: repo.owner,
+          repo: repo.name,
+          page: pageNum,
+          per_page: 100
+        });
+      }
+    );
+    let stargazers = await Promise.all(stargazersPromises);
+    fs.writeFileSync(`stargazers_paginated_${repo.owner}_${repo.name}.json`, JSON.stringify(_.flatten(_.map(stargazers, parseStargazers)), 4, null))
+    winston.log('info', 'finished fetching data');
+  }
   console.log('got all stargazers');
-  fs.writeFileSync("stargazers_paginated.json", JSON.stringify(_.flatten(_.map(stargazers, parseStargazers)), 4, null))
   // store everything
   //let rate_limit = await request.getAsync(`https://dpastoor:${process.env.GHPW}@api.github.com/rate_limit`);
 

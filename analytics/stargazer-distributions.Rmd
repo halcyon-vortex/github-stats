@@ -1,0 +1,51 @@
+---
+title: "repo-network"
+author: "devin"
+date: "January 29, 2016"
+output: html_document
+---
+```{r}
+library(dplyr)
+library(jsonlite)
+```
+
+```{r}
+natifier <- fromJSON("../github-stats/stargazers_paginated_jiahaog_nativefier.json")
+
+file_list <- list.files("../github-stats/", pattern = "stargazers_paginated.+.json", full.names = T)
+```
+
+```{r}
+all_data <- data.frame()
+for (file in file_list) {
+  if (!nrow(all_data)) {
+    all_data <- fromJSON(file) 
+  } else {
+    all_data <- bind_rows(all_data, fromJSON(file))
+  }
+}
+```
+
+```{r}
+all_common <- all_data %>% group_by(login) %>% tally %>% arrange(desc(n))
+```
+
+```{r}
+all_common %>% filter(n > 5)
+```
+
+```{r}
+library(ggplot2)
+all_common %>%
+  filter(n < 90) %>%
+  ggplot(aes(x = n)) + geom_histogram(binwidth = 1, color = "black", fill = "white")
+```
+
+```{r}
+all_common %>%
+  filter(n < 90, n > 5) %>%
+  ggplot(aes(x = n)) + 
+  geom_histogram(binwidth = 1, color = "black", fill = "white")
+```
+
+

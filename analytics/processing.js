@@ -6,11 +6,13 @@ var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'));
 var path = require('path');
 
+console.time("total");
 let addData = async function(dir, minSimilarRepos = 4) {
   let fullDir = path.join(__dirname, dir);
   let files = await fs.readdirAsync(fullDir);
   let getData = _.map(files, (file) => fs.readFileAsync(path.join(fullDir, file)));
   let results = await Promise.all(getData);
+  console.time("processData");
   let aggregateResults = _.reduce(results, (acc, data, i, total) => {
     let jsonData = JSON.parse(data);
     _.forEach(jsonData, (id) =>{
@@ -32,4 +34,7 @@ let addData = async function(dir, minSimilarRepos = 4) {
   return filteredResults;
 }
 
-addData('../prior_responses/dpastoor-100-paginated', 4).then((res) => console.log(res.length));
+addData('../prior_responses/dpastoor-100-paginated', 4).then((res) => {
+  console.timeEnd("total")
+  console.timeEnd('processData')
+});

@@ -27,7 +27,7 @@ for (file in file_list) {
 ```
 
 ```{r}
-all_common <- all_data %>% group_by(login) %>% tally %>% arrange(desc(n))
+all_common <- all_data %>% group_by(login) %>% tally %>% filter(n > 4)
 ```
 
 ```{r}

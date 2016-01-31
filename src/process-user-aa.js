@@ -4,6 +4,7 @@ import winston from 'winston';
 import parseUser from './parsing/parse-user';
 import parseRepos from './parsing/parse-repos';
 import parseStargazers from './parsing/parse-stargazers';
+import processAllStargazers from './processAllStargazers';
 let fs = Promise.promisifyAll(require('fs'));
 let request = Promise.promisifyAll(require('superagent'));
 winston.add(winston.transports.File, { filename: 'download_status.log' });
@@ -35,9 +36,9 @@ let processUser = async function(authenticatedGithubClient, user) {
 
   // for each repo, if not currently stored in redis, get key information + stargazers
   let userStarsParsed = parseRepos(userStars);
-
+  let allStargazersAllRepos = [];
   for (let repo of userStarsParsed) {
-    winston.log('info', 'starting fetching data')
+    winston.log('info', 'starting fetching data');
     // range is none inclusive, so need to do to 1 past page num, and floor is not including any remainder
     // so + 1 for any remaining in the next 100 repos, so total of +2 in the _.range
     let stargazersPromises = _.map(_.range(1, Math.floor(repo.stargazers_count/100)+2), function(pageNum) {
@@ -52,17 +53,13 @@ let processUser = async function(authenticatedGithubClient, user) {
       }
     );
     let stargazers = await Promise.all(stargazersPromises);
-    fs.writeFileSync(`stargazers_paginated_${repo.owner}_${repo.name}.json`, JSON.stringify(_.flatten(_.map(stargazers, parseStargazers)), 4, null))
-    winston.log('info', 'finished fetching data');
+    let allStargazers = _.flatten(_.map(stargazers, parseStargazers));
+    allStargazersAllRepos.push(allStargazers);
+    fs.writeFileSync(`stargazers_paginated_${repo.owner}_${repo.name}.json`, JSON.stringify(allStargazers, 4, null))
+    winston.log('info', 'added page: ' + pageNum + 'for repo ' + repo.full_name);
   }
   console.log('got all stargazers');
-  // store everything
-  //let rate_limit = await request.getAsync(`https://dpastoor:${process.env.GHPW}@api.github.com/rate_limit`);
+ // process allStargazers
 
-  //let body = userInfo.body;
-  //let isOrg = body.type === 'User';
-  //let numRepos = body.public_repos;
-  //let raw_results = await getReposFromUser({user: "tj", per_page: 10});
-  //console.log(raw_results)
 };
 export default processUser;

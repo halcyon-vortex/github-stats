@@ -6,10 +6,10 @@ import winston from 'winston';
 const request = Promise.promisifyAll(require('superagent'));
 /**
  *
- * @param ghcp {Github} authenticated github client with promisified async methods
- * @param user {string} user name
- * @param maxPagination {Number} max paginated requests
- * @param perPage {Number} per
+ * @param {Github} ghcp - authenticated github client with promisified async methods
+ * @param {string} user - user name
+ * @param {Number} maxPagination - max paginated requests
+ * @param {Number} perPage - number per page
  */
 export default async (ghcp, user, maxPagination, perPage) => {
   let per_page = perPage || 100;

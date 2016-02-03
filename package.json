@@ -36,6 +36,7 @@
     "eslint": "^1.10.3",
     "github": "^0.2.4",
     "github4": "^0.5.1",
+    "lodash": "^4.2.0",
     "parse-link-header": "^0.4.1",
     "superagent": "^1.7.2"
   }

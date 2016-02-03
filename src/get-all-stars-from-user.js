@@ -29,6 +29,7 @@ export default async (ghcp, user, maxPagination, perPage) => {
     let starsPromises = _.map(_.range(2, linksPulled+1), function(pageNum) {
       winston.log('info', 'fetching star data : ' + pageNum + 'for user ' + user);
       return ghcp.repos.getStarredFromUserAsync({
+        headers: {"Accept": "application/vnd.github.v3.star+json"},
         user: user,
         page: pageNum,
         per_page: per_page
@@ -37,7 +38,7 @@ export default async (ghcp, user, maxPagination, perPage) => {
     let remainingStarred = await Promise.all(starsPromises);
     starredRepos.push(_.map(remainingStarred, parseRepos));
   }
-  let output = {user, download_info: {dl_time: new Date(), per_page, linksPulled: linksPulled*per_page, maxLinks}, starredRepos};
+  let output = {user, download_info: {dl_time: new Date(), per_page, linksPulled: linksPulled*per_page, maxPossibleLinks}, starredRepos};
   let udir = "../prior_responses/users";
   let userDir = path.join(__dirname, udir);
   fs.writeFile(path.join(userDir, user), JSON.stringify(output), function(err, res) {

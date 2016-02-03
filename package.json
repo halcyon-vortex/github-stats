@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "bluebird": "^3.1.5",
+    "bunyan": "^1.5.1",
     "eslint": "^1.10.3",
     "github": "^0.2.4",
     "github4": "^0.5.1",

@@ -5,9 +5,6 @@ import parseStargazers from './parsing/parse-stargazers';
 import getAllStarsFromUser from './get-all-stars-from-user';
 let fs = Promise.promisifyAll(require('fs'));
 let request = Promise.promisifyAll(require('superagent'));
-winston.add(winston.transports.File, { filename: 'download_status.log' });
-winston.remove(winston.transports.Console);
-
 export default async function(ghcp, user) {
   // TODO: add pagination
   console.log('getting stars from user');
@@ -16,12 +13,14 @@ export default async function(ghcp, user) {
   for (let repo of userStarsParsed.starredRepos) {
     winston.log('info', 'starting fetching data');
     // only capture if stargazers count greater than 2
+    let pagesStargazersPulled = 0;
     if (repo.stargazers_count > 2) {
       // range is none inclusive, so need to do to 1 past page num, and floor is not including any remainder
       // so + 1 for any remaining in the next 100 repos, so total of +2 in the _.range
       let allStargazers;
       if (repo.stargazers_count < 1000) {
-        let stargazersPromises = _.map(_.range(1, Math.floor(repo.stargazers_count / 100) + 2), function (pageNum) {
+        pagesStargazersPulled = Math.floor(repo.stargazers_count / 100) + 2;
+        let stargazersPromises = _.map(_.range(1, pagesStargazersPulled), function (pageNum) {
             winston.log('info', 'fetching page: ' + pageNum + 'for repo ' + repo.full_name);
             return ghcp.repos.getStargazersAsync({
               headers: {"Accept": "application/vnd.github.v3.star+json"},
@@ -42,7 +41,17 @@ export default async function(ghcp, user) {
         // but make easy to filter
         allStargazers = {"starred_at": new Date(), login: repo.full_name, type: "highlyStarred", numStars: repo.stargazers_count}
       }
+      // push just user info to aggregate counts later
       allStargazersAllRepos.push(allStargazers);
+      // but want to save more information about when the scraping occurred, so add here
+      allStargazers = {
+        allStargazers,
+        download_info: {
+          dl_time: new Date(),
+          stargazers_count: repo.stargazers_count,
+          //need to subtract 1 as add 1 above number pulled for as the _range calc is non-inclusive above
+          pagesStargazersPulled: Math.max(0, pagesStargazersPulled - 1)}
+      };
       fs.writeFileSync(`vjd/stargazers_paginated_${repo.owner}_${repo.name}.json`, JSON.stringify(allStargazers, 4, null));
       winston.log('info', 'wrote file', {file: repo.full_name});
     }

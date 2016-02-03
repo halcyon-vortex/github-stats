@@ -13,7 +13,7 @@ export default async function(ghcp, user) {
   console.log('getting stars from user');
   let userStarsParsed = await getAllStarsFromUser(ghcp, user, 5, 100);
   let allStargazersAllRepos = [];
-  for (let repo of userStarsParsed) {
+  for (let repo of userStarsParsed.starredRepos) {
     winston.log('info', 'starting fetching data');
     // only capture if stargazers count greater than 2
     if (repo.stargazers_count > 2) {

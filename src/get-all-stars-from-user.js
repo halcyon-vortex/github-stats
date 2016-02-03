@@ -3,7 +3,11 @@ import parse from 'parse-link-header';
 import parseRepos from './parsing/parse-repos';
 import _ from 'lodash';
 import winston from 'winston';
+import fs from 'fs';
+import path from 'path';
 const request = Promise.promisifyAll(require('superagent'));
+
+winston.add(winston.transports.File, { filename: 'download_getallstars.log' });
 /**
  *
  * @param {Github} ghcp - authenticated github client with promisified async methods
@@ -18,11 +22,11 @@ export default async (ghcp, user, maxPagination, perPage) => {
   let starredRepos = parseRepos(starData.body);
   let maxLinks = per_page;
   let linksPulled = 1;
-  if (starData.headers.hasOwnProperty('links')) {
+  if (starData.headers.hasOwnProperty('link')) {
     let links = parse(starData.headers.link);
     maxLinks = per_page*links.last.page;
-    linksPulled = Math.min(maxPages, parseInt(links.last.page) + 1);
-    let starsPromises = _.map(_.range(2, linksPulled), function(pageNum) {
+    linksPulled = Math.min(maxPages, parseInt(links.last.page));
+    let starsPromises = _.map(_.range(2, linksPulled+1), function(pageNum) {
       winston.log('info', 'fetching star data : ' + pageNum + 'for user ' + user);
       return ghcp.repos.getStarredFromUserAsync({
         user: user,
@@ -33,5 +37,15 @@ export default async (ghcp, user, maxPagination, perPage) => {
     let remainingStarred = await Promise.all(starsPromises);
     starredRepos.push(_.map(remainingStarred, parseRepos));
   }
-  return {user, download_info: {dl_time: new Date(), linksPulled, maxLinks}, starredRepos};
+  let output = {user, download_info: {dl_time: new Date(), per_page, linksPulled: linksPulled*per_page, maxLinks}, starredRepos};
+  let udir = "../prior_responses/users";
+  let userDir = path.join(__dirname, udir);
+  fs.writeFile(path.join(userDir, user), JSON.stringify(output), function(err, res) {
+    if (err) {
+      winston.log('info', 'error writing file', {user, err})
+    } else {
+      winston.log('info', 'wrote file for user: ' + user)
+    }
+  });
+  return output;
 };

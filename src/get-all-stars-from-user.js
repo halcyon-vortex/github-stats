@@ -26,26 +26,27 @@ export default async (ghcp, user, maxPagination, perPage) => {
     let links = parse(starData.headers.link);
     maxLinks = per_page*links.last.page;
     linksPulled = Math.min(maxPages, parseInt(links.last.page));
-    let starsPromises = _.map(_.range(2, linksPulled+1), function(pageNum) {
+
+    let starsPromises = _.map(_.range(2, linksPulled+1), function(pageNum, index) {
       winston.log('info', 'fetching star data : ' + pageNum + 'for user ' + user);
-      return ghcp.repos.getStarredFromUserAsync({
-        headers: {"Accept": "application/vnd.github.v3.star+json"},
-        user: user,
-        page: pageNum,
-        per_page: per_page
+        return ghcp.repos.getStarredFromUserAsync({
+          headers: {"Accept": "application/vnd.github.v3.star+json"},
+          user: user,
+          page: pageNum,
+          per_page: per_page
       });
     });
     let remainingStarred = await Promise.all(starsPromises);
     starredRepos.push(_.map(remainingStarred, parseRepos));
   }
-  let output = {user, download_info: {dl_time: new Date(), per_page, linksPulled: linksPulled*per_page, maxPossibleLinks}, starredRepos};
+  let output = {user, download_info: {dl_time: new Date(), per_page, linksPulled: linksPulled*per_page, maxLinks}, starredRepos};
   let udir = "../prior_responses/users";
   let userDir = path.join(__dirname, udir);
   fs.writeFile(path.join(userDir, user), JSON.stringify(output), function(err, res) {
     if (err) {
-      winston.log('info', 'error writing file', {user, err})
+      winston.log('info', 'error writing file for user', user)
     } else {
-      winston.log('info', 'wrote file for user: ' + user)
+      winston.log('info', 'wrote file for user',  user)
     }
   });
   return output;

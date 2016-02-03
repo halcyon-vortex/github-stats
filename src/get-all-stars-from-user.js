@@ -33,5 +33,5 @@ export default async (ghcp, user, maxPagination, perPage) => {
     let remainingStarred = await Promise.all(starsPromises);
     starredRepos.push(_.map(remainingStarred, parseRepos));
   }
-  return {download_info: {dl_time: new Date(), linksPulled, maxLinks}, starredRepos};
+  return {user, download_info: {dl_time: new Date(), linksPulled, maxLinks}, starredRepos};
 };

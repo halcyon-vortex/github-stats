@@ -39,6 +39,46 @@ export default {
       "owner": "hadley",
       "fork": false
     }
+  ],
+  parsedReposStarredAt: [
+    {
+      "name": "shasta",
+      "full_name": "shastajs/shasta",
+      "created_at": "2016-01-20T18:02:48Z",
+      "updated_at": "2016-02-03T19:15:07Z",
+      "pushed_at": "2016-02-03T01:52:04Z",
+      "size": 12,
+      "stargazers_count": 124,
+      "watchers_count": 124,
+      "language": "JavaScript",
+      "forks_count": 0,
+      "forks": 0,
+      "watchers": 124,
+      "open_issues": 2,
+      "open_issues_count": 2,
+      "owner": "shastajs",
+      "fork": false,
+      "starred_at": "2016-02-03T17:07:15Z"
+    },
+    {
+      "name": "Trip.js",
+      "full_name": "EragonJ/Trip.js",
+      "created_at": "2012-12-02T16:51:52Z",
+      "updated_at": "2016-02-03T05:28:50Z",
+      "pushed_at": "2016-02-03T14:59:51Z",
+      "size": 6284,
+      "stargazers_count": 645,
+      "watchers_count": 645,
+      "language": "JavaScript",
+      "forks_count": 99,
+      "forks": 99,
+      "watchers": 645,
+      "open_issues": 13,
+      "open_issues_count": 13,
+      "owner": "EragonJ",
+      "fork": false,
+      "starred_at": "2016-02-03T01:09:56Z"
+    }
   ]
 
 }

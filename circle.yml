@@ -1,0 +1,18 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker info
+    - docker build -t halcyon-vortex/github-stats .
+
+test:
+  override:
+    - docker run halcyon-vortex/github-stats exec npm test
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - $DEPLOY

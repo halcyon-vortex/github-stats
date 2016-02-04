@@ -9,7 +9,7 @@ dependencies:
 
 test:
   override:
-    - docker run halcyon-vortex/github-stats exec npm test
+    - docker run halcyon-vortex/github-stats
 
 deployment:
   hub:

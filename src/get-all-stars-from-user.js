@@ -18,8 +18,11 @@ winston.add(winston.transports.File, { filename: 'download_getallstars.log' });
 export default async (ghcp, user, maxPagination, perPage) => {
   let per_page = perPage || 100;
   let maxPages = maxPagination || 10;
-  let starData = await request.getAsync(`https://dpastoor:${process.env.GHPW}@api.github.com/users/${user}/starred?per_page=${per_page}`);
-  let starredRepos = parseRepos(starData.body);
+  let starData = await request
+    .get(`https://umphx:zxcvasdfqwer1@api.github.com/users/${user}/starred?per_page=${per_page}`)
+    .accept("application/vnd.github.v3.star+json");
+  let starredRepos = [];
+  starredRepos.push(parseRepos(starData.body));
   let maxLinks = per_page;
   let linksPulled = 1;
   if (starData.headers.hasOwnProperty('link')) {
@@ -37,9 +40,15 @@ export default async (ghcp, user, maxPagination, perPage) => {
       });
     });
     let remainingStarred = await Promise.all(starsPromises);
-    starredRepos.push(_.map(remainingStarred, parseRepos));
+    starredRepos.push(_.flatten(_.map(remainingStarred, parseRepos)));
   }
-  let output = {user, download_info: {dl_time: new Date(), per_page, linksPulled: linksPulled*per_page, maxLinks}, starredRepos};
+  let output = {user,
+    download_info: {
+      dl_time: new Date(),
+      per_page,
+      linksPulled: linksPulled*per_page,
+      maxLinks},
+    starredRepos: _.flatten(starredRepos) };
   let udir = "../prior_responses/users";
   let userDir = path.join(__dirname, udir);
   fs.writeFile(path.join(userDir, user), JSON.stringify(output), function(err, res) {

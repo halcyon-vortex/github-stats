@@ -7,7 +7,7 @@ import parseUser from '../../src/parsing/parse-user';
 
 test('Assertions with tape.', (assert) => {
   const mockData = {
-    "login": "dpastoor_wrong",
+    "login": "dpastoor",
     "id": 3196313,
     "avatar_url": "https://avatars.githubusercontent.com/u/3196313?v=3",
     "gravatar_id": "",
